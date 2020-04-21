@@ -1,0 +1,30 @@
+insert
+
+$jedi isa order, has name "Jedi";
+$sith isa order, has name "Sith";
+
+# Okay, let's start with some Jedi masters we know of.
+$obi-wan isa human, has name "Obi-Wan Kenobi", has gender "male";
+$obi-wan-is-jedi (member: $obi-wan, member-of: $jedi) isa membership;
+
+# What do we know about Anakin?
+$shmi_skywalker isa human, has name "Shmi Skywalker", has gender "female";
+
+$anakin-skywalker isa human, has name "Anakin Skywalker", has gender "male";
+$shmi-is-anakins-parent (parent: $shmi_skywalker, child: $anakin-skywalker) isa parentship;
+
+$anakin-is-jedi (member: $anakin-skywalker, member-of: $jedi) isa membership;
+
+$anakin-padawan-of-obiwan (institution: $jedi, teacher: $obi-wan, apprentice: $anakin-skywalker) isa apprenticeship;
+
+
+# Now, his son
+$luke-skywalker isa human, has name "Luke Skywalker", has gender "male";
+$anakin-is-lukes-parent (parent: $anakin-skywalker, child: $luke-skywalker) isa parentship;
+$luke-is-jedi (member: $luke-skywalker, member-of: $jedi) isa membership;
+
+
+# Darth Vader is an alter ego of Anakin Skywalker
+$darth-vader isa human, has name "Darth Vader", has gender "male";
+$darth-vader-is-anakin (this: $anakin-skywalker, that: $darth-vader) isa alter-ego;
+$darth-vader-is-sith (member: $darth-vader, member-of: $sith) isa membership;

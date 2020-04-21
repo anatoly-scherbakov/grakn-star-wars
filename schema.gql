@@ -1,0 +1,132 @@
+define
+
+# We will be mostly describing conscious beings; let's define what a person is.
+
+being sub entity;
+
+name sub attribute,
+    datatype string;
+
+gender sub attribute,
+    datatype string,
+    regex "^(male|female)$";
+
+person sub being,
+    has name,
+    has gender,
+    plays parent,
+    plays child;
+
+
+# Star Wars are very conservative: most races have two genders and have two parents.
+parentship sub relation,
+    relates parent,
+    relates child,
+    relates father as parent,
+    relates mother as parent,
+    relates son as child,
+    relates daughter as child;
+
+person-with-a-mother sub entity;
+person-with-a-father sub entity;
+
+genderizeParentships1
+when{
+    (parent: $p, child: $c) isa parentship;
+    $p has gender 'male';
+    $c has gender 'male';
+}, then{
+    (father: $p, son: $c) isa parentship;
+};
+
+genderizeParentships2
+when{
+    (parent: $p, child: $c) isa parentship;
+    $p has gender 'male';
+    $c has gender 'female';
+}, then{
+    (father: $p, daughter: $c) isa parentship;
+};
+
+genderizeParentships3
+when{
+    (parent: $p, child: $c) isa parentship;
+    $p has gender 'female';
+    $c has gender 'male';
+}, then{
+    (mother: $p, son: $c) isa parentship;
+};
+
+genderizeParentships4
+when{
+    (parent: $p, child: $c) isa parentship;
+    $p has gender 'female';
+    $c has gender 'female';
+}, then{
+    (mother: $p, daughter: $c) isa parentship;
+};
+
+# We have multiple races in Star Wars.
+human sub person;
+wookie sub person;
+
+
+# A person of any race can belong to one of the organizations.
+organization sub entity,
+    has name,
+    plays member-of;
+
+membership sub relation,
+    relates member,
+    relates member-of;
+
+person sub being,
+    plays member;
+
+
+# Order is an organization which is powered and defined by the Force.
+order sub organization,
+    plays institution;
+
+# Orders always use the notion of a teacher and an apprentice.
+apprenticeship sub relation,
+    relates institution,
+    relates teacher,
+    relates apprentice;
+
+person sub being,
+    plays teacher,
+    plays apprentice,
+    plays padawan;
+
+# Determine when someone is a padawan.
+padawanship sub relation,
+    relates teacher,
+    relates padawan;
+
+apprenticeship-is-padawanship
+when{
+    (institution: $i, teacher: $t, apprentice: $a) isa apprenticeship;
+    $i has name "Jedi";
+}, then{
+    (teacher: $t, padawan: $a) isa padawanship;
+};
+
+
+# Two persons are actually the same one.
+alter-ego sub relation,
+    relates this,
+    relates that;
+
+person sub being,
+    plays this,
+    plays that;
+
+# Alter-egoism does not change parental relationship
+alter-ego-and-parentship
+when {
+    (parent: $original, child: $child) isa parentship;
+    (this: $original, that: $alter-ego) isa alter-ego;
+}, then {
+    (parent: $alter-ego, child: $child) isa parentship;
+};
